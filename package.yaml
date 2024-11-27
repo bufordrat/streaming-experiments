@@ -1,0 +1,62 @@
+name:                streaming-experiments
+version:             0.1.0.0
+
+extra-source-files:
+- README.md
+
+description:         streaming-experiments
+
+ghc-options:
+- -Wall
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wno-unused-top-binds
+- -Wno-unused-local-binds
+- -Wno-unused-pattern-binds
+- -Wno-unused-matches
+- -Wno-missing-signatures
+- -Wno-type-defaults
+- -Wno-compat-unqualified-imports
+- -Wno-name-shadowing
+- -fdefer-typed-holes
+
+language: GHC2021
+
+default-extensions:
+- InstanceSigs
+- NamedFieldPuns
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  streaming-experiments-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - streaming-experiments
+    when:
+    - condition: false
+      other-modules: Paths_streaming-experiments
+
+tests:
+  streaming-experiments-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - streaming-experiments
+    - hspec
+    - hspec-discover
+    - QuickCheck
+

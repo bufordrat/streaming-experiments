@@ -1,0 +1,27 @@
+name: build
+
+on:
+  - push
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    container:
+      image: haskell:9.4.8-buster
+      options: --user root
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.stack
+            .stack-work
+            */.stack-work
+          key: streaming-experiments
+      - name: Permissions bug workaround
+        run: "chown -R $(id -un):$(id -gn) ~"
+      - name: Build
+        run: stack build --allow-different-user
+      - name: Test
+        run: stack test --allow-different-user

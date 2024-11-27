@@ -1,0 +1,62 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.37.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           streaming-experiments
+version:        0.1.0.0
+description:    streaming-experiments
+build-type:     Simple
+extra-source-files:
+    README.md
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_streaming_experiments
+  hs-source-dirs:
+      src
+  default-extensions:
+      InstanceSigs
+      NamedFieldPuns
+  ghc-options: -Wall -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Wno-name-shadowing -fdefer-typed-holes
+  build-depends:
+      base >=4.7 && <5
+  default-language: GHC2021
+
+executable streaming-experiments-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_streaming_experiments
+  hs-source-dirs:
+      app
+  default-extensions:
+      InstanceSigs
+      NamedFieldPuns
+  ghc-options: -Wall -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Wno-name-shadowing -fdefer-typed-holes -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , streaming-experiments
+  default-language: GHC2021
+
+test-suite streaming-experiments-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      LibSpec
+      Paths_streaming_experiments
+  hs-source-dirs:
+      test
+  default-extensions:
+      InstanceSigs
+      NamedFieldPuns
+  ghc-options: -Wall -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Wno-name-shadowing -fdefer-typed-holes -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      QuickCheck
+    , base >=4.7 && <5
+    , hspec
+    , hspec-discover
+    , streaming-experiments
+  default-language: GHC2021
