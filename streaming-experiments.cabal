@@ -13,7 +13,8 @@ extra-source-files:
 
 library
   exposed-modules:
-      Lib
+      FromScratch
+      FromScratchFunc
   other-modules:
       Paths_streaming_experiments
   hs-source-dirs:
@@ -24,6 +25,7 @@ library
   ghc-options: -Wall -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Wno-name-shadowing -fdefer-typed-holes
   build-depends:
       base >=4.7 && <5
+    , streaming
   default-language: GHC2021
 
 executable streaming-experiments-exe
@@ -38,6 +40,7 @@ executable streaming-experiments-exe
   ghc-options: -Wall -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Wno-name-shadowing -fdefer-typed-holes -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , streaming
     , streaming-experiments
   default-language: GHC2021
 
@@ -58,5 +61,6 @@ test-suite streaming-experiments-test
     , base >=4.7 && <5
     , hspec
     , hspec-discover
+    , streaming
     , streaming-experiments
   default-language: GHC2021
