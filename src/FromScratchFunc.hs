@@ -1,6 +1,7 @@
 module FromScratchFunc where
 
 import Data.Bifunctor
+import Data.Functor.Compose
 
 data Stream f m r
   = Step (f (Stream f m r))
@@ -62,6 +63,16 @@ printStream (Step (s :> strm)) = do
   putStrLn $ "Intermediate element: " <> show s
   printStream strm
 
+showStream :: (Monad m, Show a, Show r) => Stream (Of a) m r -> m String
+showStream strm =
+  let showStream' (Return r) = pure ""
+      showStream' (Effect m) = m >>= showStream'
+      showStream' (Step (s :> esses)) =
+        fmap ((show s <> ",") <>) (showStream' esses)
+  in do
+    s <- showStream' strm
+    pure (take (length s - 1) s)
+
 exampleStream :: Stream (Of Int) IO ()
 exampleStream = do
   yield 1
@@ -101,4 +112,64 @@ zipsWith op strm (Effect m) =
 zipsWith op (Step fs) (Step gs) =
   Step (op (zipsWith op) fs gs)
 
-           
+zipPair :: Monad m =>
+           Stream (Of a) m r ->
+           Stream (Of b) m r ->
+           Stream (Of (a,b)) m r
+zipPair = let pairUp p (e1 :> x1) (e2 :> x2) =
+                (e1, e2) :> p x1 x2
+          in zipsWith pairUp
+
+zips :: (Monad m, Functor f, Functor g) =>
+        Stream f m r ->
+        Stream g m r ->
+        Stream (Compose f g) m r
+zips = let combiner p fx gy =
+             Compose (fmap (\x -> fmap (p x) gy) fx)
+       in zipsWith combiner
+
+decompose :: (Monad m, Functor f) =>
+             Stream (Compose m f) m r ->
+             Stream f m r
+decompose (Return r) = Return r
+decompose (Effect m) = Effect (decompose <$> m)
+decompose (Step (Compose mstrm)) = Effect $ do
+  strm <- mstrm
+  pure (Step (decompose <$> strm))
+
+mapsM :: (Monad m, Functor f, Functor g) =>
+         (forall x. f x -> m (g x)) ->
+         Stream f m r ->
+         Stream g m r
+mapsM fun = decompose . maps (Compose . fun)
+
+withEffect :: Monad m =>
+              (e -> m ()) ->
+              Stream (Of e) m r ->
+              Stream (Of e) m r
+withEffect eff = let go p@(e :> _) = eff e >> pure p
+                 in mapsM go
+
+splitsAt :: (Monad m, Functor f) =>
+            Int ->
+            Stream f m r ->
+            Stream f m (Stream f m r)
+splitsAt n strm 
+  | n > 0 = case strm of
+              Return r -> Return (Return r)
+              Effect m -> Effect (fmap (splitsAt n) m)
+              Step f -> Step (fmap (splitsAt (n - 1)) f)
+  | otherwise = Return strm
+
+chunksOf :: forall f m r. (Monad m, Functor f) =>
+            Int ->
+            Stream f m r ->
+            Stream (Stream f m) m r
+chunksOf n strm =
+  let cutChunk strm = fmap (chunksOf n) (splitsAt (n - 1) strm)
+  in case strm of
+    Return r -> Return r
+    Effect m -> Effect (fmap (chunksOf n) m)
+    Step fs -> Step (Step (fmap cutChunk fs))
+
+

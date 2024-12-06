@@ -29,6 +29,9 @@ default-extensions:
 dependencies:
 - base >= 4.7 && < 5
 - streaming
+- extra
+- text
+- text-show
 
 library:
   source-dirs: src
