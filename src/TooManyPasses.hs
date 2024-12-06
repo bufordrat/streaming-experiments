@@ -17,8 +17,8 @@ tabulate cols ns = map mconcat
                    . map withTab
                    $ ns
 
-sumAndTabL :: Int -> [Int] -> IO Int
-sumAndTabL cols ns = do
+sumAndTab :: Int -> [Int] -> IO Int
+sumAndTab cols ns = do
   traverse_ putStrLn (tabulate cols ns)
   pure (sum ns)
 

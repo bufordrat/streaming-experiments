@@ -17,6 +17,7 @@ library
       FromScratchFunc
       Iteratees
       NotFromScratch
+      SimpleList
       TooManyPasses
   other-modules:
       Paths_streaming_experiments

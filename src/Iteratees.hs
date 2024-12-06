@@ -13,3 +13,4 @@ data Iteratee a
 
 empty_stream = Chunk ""
 
+-- Ok, I give up

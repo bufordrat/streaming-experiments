@@ -1,21 +1,28 @@
 module NotFromScratch where
 
-import Data.Text (Text, pack)
-import Data.Text.IO as TIO
-import TextShow
-import qualified Data.List.Extra as LE
-
 import Streaming as S
 import qualified Streaming.Prelude as S
 
-withTab :: Int -> Text
-withTab num = showt num <> (pack "\t")
+withTab :: Int -> String
+withTab num = show num <> "\t"
 
-tabulateL :: Int -> [Int] -> [Text]
-tabulateL cols ns = map mconcat $ LE.chunksOf cols $ map withTab ns
+tabulate :: Int ->
+            Stream (Of Int) IO r ->
+            Stream (Of String) IO r
+tabulate cols strm = S.mapsM S.mconcat
+                     . S.chunksOf cols
+                     . S.map withTab
+                     $ strm
 
-sumAndTabL :: Int -> [Int] -> IO Int
-sumAndTabL cols ns = do
-  mapM_ TIO.putStrLn $ tabulateL cols ns
-  pure $ sum ns
+listToStream :: Monad m => [a] -> Stream (Of a) m ()
+listToStream = S.each
 
+sumAndTab :: Int -> Stream (Of Int) IO r -> IO Int
+sumAndTab cols strm = fmap S.fst'
+                      . S.mapM_ putStrLn
+                      . tabulate cols
+                      . S.store S.sum
+                      $ strm
+
+strm :: Stream (Of Int) IO ()
+strm = listToStream [1..9]
