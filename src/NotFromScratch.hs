@@ -26,3 +26,8 @@ sumAndTab cols strm = fmap S.fst'
 
 strm :: Stream (Of Int) IO ()
 strm = listToStream [1..9]
+
+
+-- λ> S.mapM_ putStrLn $ tabulate 3 $ listToStream [1..9]
+-- λ> S.length $ S.sum $ S.copy $ S.each [1..9 :: Int]
+-- λ> sumAndTabS 3 strm

@@ -22,3 +22,4 @@ sumAndTab cols ns = do
   traverse_ putStrLn (tabulate cols ns)
   pure (sum ns)
 
+-- λ> sumAndTab 3 [1..9]
