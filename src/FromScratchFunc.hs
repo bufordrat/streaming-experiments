@@ -53,6 +53,8 @@ ssum (Return r) = pure (0 :> r)
 ssum (Effect m) = m >>= ssum
 ssum (Step (s :> strm)) = first (+s) <$> ssum strm
 
+-- λ> ssum $ each [1..3 :: Int]
+
 printStream :: (Show e, Show r) => Stream (Of e) IO r -> IO ()
 printStream (Return r) = putStrLn $ "Result: " <> show r
 printStream (Effect m) = do
@@ -62,6 +64,8 @@ printStream (Effect m) = do
 printStream (Step (s :> strm)) = do
   putStrLn $ "Intermediate element: " <> show s
   printStream strm
+
+-- λ> printStream stream1
 
 showStream :: (Monad m, Show a, Show r) => Stream (Of a) m r -> m String
 showStream strm =
@@ -150,6 +154,9 @@ withEffect :: Monad m =>
 withEffect eff = let go p@(e :> _) = eff e >> pure p
                  in mapsM go
 
+-- λ> ssum $ withEffect print $ each [1..3 :: Int]
+-- λ> ssum $ withEffect print $ withEffect (\_ -> putStr "Element: ") $ each [1..3 :: Int]
+
 splitsAt :: (Monad m, Functor f) =>
             Int ->
             Stream f m r ->
@@ -172,4 +179,4 @@ chunksOf n strm =
     Effect m -> Effect (fmap (chunksOf n) m)
     Step fs -> Step (Step (fmap cutChunk fs))
 
-
+-- λ> ssum $ withEffect print $ mapsM ssum $ chunksOf 2 $ each [1,1,1,1,1 :: Int]
